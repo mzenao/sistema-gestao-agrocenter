@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-3 text-center">Relatórios</h2>
+
+  <!-- Carrossel -->
+  <div id="relatoriosCarousel" class="carousel slide" data-bs-ride="false">
+    
+    <!-- Slides -->
+    <div class="carousel-inner">
+
+      <!-- Slide 1 -->
+      <div class="carousel-item active">
+        <div class="card relatorio-card">
+          <div class="card-header">Total Vendido por Mês</div>
+          <div class="card-body d-flex align-items-center justify-content-center">
+            <canvas id="graficoVendasMes"
+                    data-labels="{% for v in vendas %}{{ v.mes }}{% if not loop.last %},{% endif %}{% endfor %}"
+                    data-valores="{% for v in vendas %}{{ v.valor_total }}{% if not loop.last %},{% endif %}{% endfor %}">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
+<!-- Slide 2 -->
+  <div class="carousel-item">
+    <div class="card relatorio-card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Formas de Pagamento</span>
+        <select id="mesPagamentos" class="form-select form-select-sm" style="width:auto;">
+          <option value="1">Janeiro</option>
+          <option value="2">Fevereiro</option>
+          <option value="3">Março</option>
+          <option value="4">Abril</option>
+          <option value="5">Maio</option>
+          <option value="6">Junho</option>
+          <option value="7">Julho</option>
+          <option value="8">Agosto</option>
+          <option value="9">Setembro</option>
+          <option value="10">Outubro</option>
+          <option value="11">Novembro</option>
+          <option value="12">Dezembro</option>
+        </select>
+      </div>
+      <div class="card-body d-flex align-items-center justify-content-center" style="position: relative;">
+        <canvas id="graficoPagamentos"
+                data-labels="{% for p in pagamentos %}{{ p.forma_pagamento }}{% if not loop.last %},{% endif %}{% endfor %}"
+                data-valores="{% for p in pagamentos %}{{ p.total }}{% if not loop.last %},{% endif %}{% endfor %}">
+        </canvas>
+        <div id="msgPagamentos" class="text-muted" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3 -->
+  <div class="carousel-item">
+    <div class="card relatorio-card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Categorias mais procuradas</span>
+        <select id="mesCategorias" class="form-select form-select-sm" style="width:auto;">
+          <option value="1">Janeiro</option>
+          <option value="2">Fevereiro</option>
+          <option value="3">Março</option>
+          <option value="4">Abril</option>
+          <option value="5">Maio</option>
+          <option value="6">Junho</option>
+          <option value="7">Julho</option>
+          <option value="8">Agosto</option>
+          <option value="9">Setembro</option>
+          <option value="10">Outubro</option>
+          <option value="11">Novembro</option>
+          <option value="12">Dezembro</option>
+        </select>
+      </div>
+      <div class="card-body d-flex align-items-center justify-content-center" style="position: relative;">
+        <canvas id="graficoCategorias"
+                data-labels="{% for c in categorias %}{{ c.categoria }}{% if not loop.last %},{% endif %}{% endfor %}"
+                data-valores="{% for c in categorias %}{{ c.quantidade }}{% if not loop.last %},{% endif %}{% endfor %}">
+        </canvas>
+        <div id="msgCategorias" class="text-muted" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4 -->
+  <div class="carousel-item">
+    <div class="card relatorio-card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Top Itens mais vendidos</span>
+        <select id="mesTopItens" class="form-select form-select-sm" style="width:auto;">
+          <option value="1">Janeiro</option>
+          <option value="2">Fevereiro</option>
+          <option value="3">Março</option>
+          <option value="4">Abril</option>
+          <option value="5">Maio</option>
+          <option value="6">Junho</option>
+          <option value="7">Julho</option>
+          <option value="8">Agosto</option>
+          <option value="9">Setembro</option>
+          <option value="10">Outubro</option>
+          <option value="11">Novembro</option>
+          <option value="12">Dezembro</option>
+        </select>
+      </div>
+      <div class="card-body d-flex align-items-center justify-content-center" style="position: relative;">
+        <canvas id="graficoTopItens"
+                data-labels="{% for i in itens %}{{ i.item }}{% if not loop.last %},{% endif %}{% endfor %}"
+                data-valores="{% for i in itens %}{{ i.quantidade }}{% if not loop.last %},{% endif %}{% endfor %}">
+        </canvas>
+        <div id="msgTopItens" class="text-muted" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+      </div>
+    </div>
+  </div>
+</div> <!-- fim da carousel-inner -->
+
+    <!-- Botões de navegação FORA dos cards -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#relatoriosCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#relatoriosCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon"></span>
+    </button>
+
+    <!-- Indicadores -->
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#relatoriosCarousel" data-bs-slide-to="0" class="active"></button>
+      <button type="button" data-bs-target="#relatoriosCarousel" data-bs-slide-to="1"></button>
+      <button type="button" data-bs-target="#relatoriosCarousel" data-bs-slide-to="2"></button>
+      <button type="button" data-bs-target="#relatoriosCarousel" data-bs-slide-to="3"></button>
+    </div>
+  </div>
+</div>
+
+<!-- CSS extra -->
+<style>
+  .relatorio-card {
+    height: 500px; /* altura fixa para todos os cards */
+  }
+  .relatorio-card .card-body {
+    height: 100%;
+  }
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 5%; /* controles mais estreitos */
+  }
+</style>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function criarGrafico(id, tipo, labelDataset, cores, usarPorcentagem=false, maxY=null, mostrarLegenda=true) {
+  const canvas = document.getElementById(id);
+  let labels = canvas.dataset.labels.split(',').map(l => l.trim());
+  let valores = canvas.dataset.valores.split(',').map(Number);
+
+  if (id === 'graficoTopItens') {
+    labels = labels.slice(0, 5);
+    valores = valores.slice(0, 5);
+  }
+
+  if (id === 'graficoVendasMes') {
+    const mesesFixos = ['1','2','3','4','5','6','7','8','9','10','11','12'];
+    const nomesMeses = {
+      "1": "Jan", "2": "Fev", "3": "Mar", "4": "Abr",
+      "5": "Mai", "6": "Jun", "7": "Jul", "8": "Ago",
+      "9": "Set", "10": "Out", "11": "Nov", "12": "Dez"
+    };
+    const mapa = {};
+    labels.forEach((l, i) => { mapa[l] = valores[i]; });
+    labels = mesesFixos.map(m => nomesMeses[m]);
+    valores = mesesFixos.map(m => mapa[m] ?? null);
+  }
+
+  let dados = valores;
+  if (usarPorcentagem) {
+    const total = valores.reduce((acc, v) => acc + (v || 0), 0);
+    dados = valores.map(v => v !== null ? ((v / total) * 100).toFixed(2) : null);
+  }
+
+  return new Chart(canvas, {
+    type: tipo,
+    data: {
+      labels: labels,
+      datasets: [{
+        label: labelDataset,
+        data: dados,
+        backgroundColor: cores || 'rgba(54,162,235,0.6)',
+        borderColor: Array.isArray(cores) ? cores.map(() => '#fff') : '#fff',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: mostrarLegenda
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              if (usarPorcentagem) {
+                return context.label + ': ' + (context.raw !== null ? context.raw + '%' : 'Sem vendas');
+              }
+              return context.label + ': ' + (context.raw !== null ? context.raw : 'Sem vendas');
+            }
+          }
+        }
+      },
+      scales: (tipo === 'bar' || tipo === 'line') ? {
+        y: { beginAtZero: true, max: maxY || undefined }
+      } : {}
+    }
+  });
+}
+
+// Inicialização dos gráficos com dados reais do DB
+const graficoVendasMes = criarGrafico('graficoVendasMes', 'bar', 'Quantidade de Vendas', '#28a745', false, 50000);
+const graficoPagamentos = criarGrafico('graficoPagamentos', 'pie', 'Formas de Pagamento',
+  ['#28a745','#dc3545','#ffc107','#17a2b8','#6f42c1'], true);
+const graficoCategorias = criarGrafico('graficoCategorias', 'bar', 'Itens por Categoria',
+  ['#28a745','#dc3545','#ffc107','#17a2b8','#6f42c1'], false, 100, false);
+const graficoTopItens = criarGrafico('graficoTopItens', 'bar', 'Item mais vendido',
+  ['#28a745','#dc3545','#ffc107','#17a2b8','#6f42c1']);
+const graficoMediaDiaria = criarGrafico('graficoMediaDiaria', 'line', 'Média Diária');
+
+// 🔹 Listeners dos selects (se quiser filtrar por mês, precisa passar dados separados do backend)
+// Formas de Pagamento
+document.getElementById('mesPagamentos').addEventListener('change', function() {
+  const mes = this.value;
+  const dados = pagamentosPorMes[mes]; // objeto vindo do backend
+
+  if (dados && dados.length > 0) {
+    graficoPagamentos.data.datasets[0].data = dados;
+    graficoPagamentos.update();
+    document.getElementById('msgPagamentos').innerText = "";
+  } else {
+    graficoPagamentos.data.datasets[0].data = [];
+    graficoPagamentos.update();
+    document.getElementById('msgPagamentos').innerText = "Sem dados neste mês";
+  }
+});
+
+// Categorias
+document.getElementById('mesCategorias').addEventListener('change', function() {
+  const mes = this.value;
+  const dados = categoriasPorMes[mes];
+
+  if (dados && dados.length > 0) {
+    graficoCategorias.data.datasets[0].data = dados;
+    graficoCategorias.update();
+    document.getElementById('msgCategorias').innerText = "";
+  } else {
+    graficoCategorias.data.datasets[0].data = [];
+    graficoCategorias.update();
+    document.getElementById('msgCategorias').innerText = "Sem dados neste mês";
+  }
+});
+
+// Top Itens
+document.getElementById('mesTopItens').addEventListener('change', function() {
+  const mes = this.value;
+  const dados = topItensPorMes[mes];
+
+  if (dados && dados.length > 0) {
+    graficoTopItens.data.datasets[0].data = dados;
+    graficoTopItens.update();
+    document.getElementById('msgTopItens').innerText = "";
+  } else {
+    graficoTopItens.data.datasets[0].data = [];
+    graficoTopItens.update();
+    document.getElementById('msgTopItens').innerText = "Sem dados neste mês";
+  }
+});
+
+// Média Diária
+document.getElementById('mesMediaDiaria').addEventListener('change', function() {
+  const mes = this.value;
+  const dados = mediasPorMes[mes];
+
+  if (dados && dados.length > 0) {
+    graficoMediaDiaria.data.datasets[0].data = dados;
+    graficoMediaDiaria.update();
+    document.getElementById('msgMediaDiaria').innerText = "";
+  } else {
+    graficoMediaDiaria.data.datasets[0].data = [];
+    graficoMediaDiaria.update();
+    document.getElementById('msgMediaDiaria').innerText = "Sem dados neste mês";
+  }
+});
+</script>
+<script>
+// 🔹 Formas de Pagamento
+document.getElementById('mesPagamentos').addEventListener('change', async function() {
+  const mes = this.value;
+  const response = await fetch(`/dados/pagamentos/${mes}`);
+  const dados = await response.json();
+
+  graficoPagamentos.data.labels = dados.map(d => d.forma_pagamento);
+  graficoPagamentos.data.datasets[0].data = dados.map(d => d.total);
+  graficoPagamentos.update();
+
+  document.getElementById('msgPagamentos').innerText = dados.length ? "" : "Sem dados neste mês";
+});
+
+// 🔹 Categorias
+document.getElementById('mesCategorias').addEventListener('change', async function() {
+  const mes = this.value;
+  const response = await fetch(`/dados/categorias/${mes}`);
+  const dados = await response.json();
+
+  graficoCategorias.data.labels = dados.map(d => d.categoria);
+  graficoCategorias.data.datasets[0].data = dados.map(d => d.quantidade);
+  graficoCategorias.update();
+
+  document.getElementById('msgCategorias').innerText = dados.length ? "" : "Sem dados neste mês";
+});
+
+// 🔹 Top Itens
+document.getElementById('mesTopItens').addEventListener('change', async function() {
+  const mes = this.value;
+  const response = await fetch(`/dados/top-itens/${mes}`);
+  const dados = await response.json();
+
+  graficoTopItens.data.labels = dados.map(d => d.item);
+  graficoTopItens.data.datasets[0].data = dados.map(d => d.quantidade);
+  graficoTopItens.update();
+
+  document.getElementById('msgTopItens').innerText = dados.length ? "" : "Sem dados neste mês";
+});
+
+// 🔹 Média Diária
+document.getElementById('mesMediaDiaria').addEventListener('change', async function() {
+  const mes = this.value;
+  const response = await fetch(`/dados/medias/${mes}`);
+  const dados = await response.json();
+
+  graficoMediaDiaria.data.labels = dados.map(d => d.dia);
+  graficoMediaDiaria.data.datasets[0].data = dados.map(d => d.media_vendas);
+  graficoMediaDiaria.update();
+
+  document.getElementById('msgMediaDiaria').innerText = dados.length ? "" : "Sem dados neste mês";
+});
+</script>
+{% endblock %}

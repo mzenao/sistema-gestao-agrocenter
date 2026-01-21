@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+
+  <!-- Calendário funcional -->
+  <form method="GET" action="{{ url_for('vendas') }}" id="formData" class="mb-3">
+    <label for="dataVenda" class="form-label">Data da venda</label>
+    <input type="text" id="dataVenda" name="data" class="form-control"
+           value="{{ data_sel }}" autocomplete="off" required>
+  </form>
+
+  <!-- Formulário de item -->
+  <form method="POST" action="{{ url_for('adicionar_item') }}" id="formItem" class="mb-3">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label">Item</label>
+        <div class="dropdown">
+          <input type="text" id="itemInput" name="item_nome"
+                 class="form-control dropdown-toggle"
+                 placeholder="Digite o nome do item"
+                 data-bs-toggle="dropdown" autocomplete="off" required>
+          <ul class="dropdown-menu" id="itemSuggestions">
+            {% for item in itens %}
+              <li><a class="dropdown-item" href="#" data-preco="{{ item.preco_venda }}">{{ item.nome }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label">Quantidade (opcional)</label>
+        <input type="number" step="0.01" name="quantidade" class="form-control"
+               placeholder="Qtd" autocomplete="off">
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label">Valor</label>
+        <input type="number" step="0.01" name="valor" class="form-control"
+               placeholder="Preço" autocomplete="off">
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label">Desconto</label>
+        <input type="number" step="0.01" name="desconto" class="form-control"
+               placeholder="0.00" autocomplete="off">
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label">Acréscimo</label>
+        <input type="number" step="0.01" name="acrescimo" class="form-control"
+               placeholder="0.00" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <button type="submit" class="btn btn-primary-venda">Adicionar item</button>
+    </div>
+  </form>
+
+  <!-- Card de resumo do carrinho -->
+  <div class="card p-3 mb-3">
+    <h5 class="mb-2">Resumo da venda</h5>
+    {% if carrinho %}
+      <ul class="list-group mb-2">
+        {% for i in carrinho %}
+          <li class="list-group-item d-flex justify-content-between">
+            <span>{{ i.item_nome }} — {{ "%.2f"|format(i.quantidade) }} un</span>
+          </li>
+        {% endfor %}
+      </ul>
+      <p class="mb-0"><strong>Total:</strong> R$ {{ "%.2f"|format(total_carrinho) }}</p>
+    {% else %}
+      <p class="text-muted mb-0">Nenhum item adicionado.</p>
+    {% endif %}
+  </div>
+
+  <!-- Concluir venda -->
+  <form method="POST" action="{{ url_for('concluir_venda') }}" id="formFinalizar" class="mt-3">
+    <div class="input-group">
+      <select name="forma_pagamento" class="form-select-pagamento">
+        <option value="dinheiro">Dinheiro</option>
+        <option value="debito">Débito</option>
+        <option value="credito">Crédito</option>
+        <option value="pix">Pix</option>
+      </select>
+      <button type="submit" class="btn btn-success-venda">Concluir venda</button>
+    </div>
+  </form>
+
+  <!-- Lista de vendas -->
+  <h5 class="mt-4">Vendas do dia {{ data_sel }}</h5>
+  <table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th>Quantidade</th>
+      <th>Valor</th>
+      <th>Desconto</th>
+      <th>Acréscimo</th>
+      <th>Forma</th>
+      <th>Data/Hora</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% if vendas %}
+    {% for v in vendas %}
+      <tr>
+        <!-- Coluna de itens -->
+        <td>
+          {% for vi in v.itens %}
+            {{ vi.item.nome }}<br>
+          {% endfor %}
+        </td>
+
+        <!-- Coluna de quantidades -->
+        <td>
+          {% for vi in v.itens %}
+            {{ "%.2f"|format(vi.quantidade) }}<br>
+          {% endfor %}
+        </td>
+
+        <!-- Coluna de valores -->
+        <td>
+          {% for vi in v.itens %}
+            R$ {{ "%.2f"|format(vi.valor_venda) }}<br>
+          {% endfor %}
+        </td>
+
+        <!-- Coluna de descontos -->
+        <td>
+          {% for vi in v.itens %}
+            R$ {{ "%.2f"|format(vi.desconto or 0) }}<br>
+          {% endfor %}
+        </td>
+
+        <!-- Coluna de acréscimos -->
+        <td>
+          {% for vi in v.itens %}
+            R$ {{ "%.2f"|format(vi.acrescimo or 0) }}<br>
+          {% endfor %}
+        </td>
+
+        <!-- Forma de pagamento -->
+        <td>{{ v.forma_pagamento|capitalize }}</td>
+
+        <!-- Data da venda -->
+        <td>{{ v.data_venda.strftime("%d/%m/%Y - %H:%M") }}</td>
+        <td>
+  <!-- Botão editar venda -->
+          <button class="btn btn-sm btn-outline-primary-venda"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalEditarVenda{{ v.id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16"
+                style="pointer-events:none;">
+              <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 
+                      14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 
+                      6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 
+                      0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 
+                      .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 
+                      0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 
+                      0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 
+                      0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 
+                      0 0 0 .168-.11z"/>
+            </svg>
+          </button>
+
+          <!-- Botão cancelar venda -->
+          <form method="POST" action="{{ url_for('cancelar_venda') }}" style="display:inline;">
+            <input type="hidden" name="venda_id" value="{{ v.id }}">
+            <button type="submit" class="btn btn-sm btn-outline-danger-venda">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                  fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16"
+                  style="pointer-events:none;">
+                <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 
+                        10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 
+                        3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 
+                        6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 
+                        0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 
+                        0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 
+                        0 1 0 .998-.06l-.5-8.5a.5.5 
+                        0 1 0-.998.06m6.53-.528a.5.5 
+                        0 0 0-.528.47l-.5 8.5a.5.5 
+                        0 0 0 .998.058l.5-8.5a.5.5 
+                        0 0 0-.47-.528M8 4.5a.5.5 
+                        0 0 0-.5.5v8.5a.5.5 
+                        0 0 0 1 0V5a.5.5 
+                        0 0 0-.5-.5"/>
+              </svg>
+            </button>
+          </form>
+          <!-- Modal de edição -->
+          <div class="modal fade" id="modalEditarVenda{{ v.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <form method="POST" action="{{ url_for('editar_venda') }}">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Editar Venda</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                    <input type="hidden" name="venda_id" value="{{ v.id }}">
+
+                    <!-- Forma de pagamento -->
+                    <div class="mb-3">
+                      <label for="forma_pagamento{{ v.id }}" class="form-label">Forma de Pagamento</label>
+                      <select class="form-select" name="forma_pagamento" id="forma_pagamento{{ v.id }}">
+                        <option value="dinheiro" {% if v.forma_pagamento == 'dinheiro' %}selected{% endif %}>Dinheiro</option>
+                        <option value="cartao" {% if v.forma_pagamento == 'cartao' %}selected{% endif %}>Cartão</option>
+                        <option value="pix" {% if v.forma_pagamento == 'pix' %}selected{% endif %}>Pix</option>
+                      </select>
+                    </div>
+
+                    <!-- Itens da venda -->
+                    {% for vi in v.itens %}
+                    <div class="row mb-2">
+                      <div class="col-md-4">
+                        <label class="form-label">Item</label>
+                        <input type="text" class="form-control" name="item_nome[]" value="{{ vi.item.nome }}">
+                      </div>
+                      <div class="col-md-2">
+                        <label class="form-label">Quantidade</label>
+                        <input type="number" step="0.01" class="form-control" name="quantidade[]" value="{{ vi.quantidade }}">
+                      </div>
+                      <div class="col-md-2">
+                        <label class="form-label">Valor</label>
+                        <input type="number" step="0.01" class="form-control" name="valor[]" value="{{ vi.valor_venda }}">
+                      </div>
+                      <div class="col-md-2">
+                        <label class="form-label">Desconto</label>
+                        <input type="number" step="0.01" class="form-control" name="desconto[]" value="{{ vi.desconto }}">
+                      </div>
+                      <div class="col-md-2">
+                        <label class="form-label">Acréscimo</label>
+                        <input type="number" step="0.01" class="form-control" name="acrescimo[]" value="{{ vi.acrescimo }}">
+                      </div>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary-salvarvenda">Salvar Alterações</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </td>
+      </tr>
+    {% endfor %}
+  {% else %}
+    <tr>
+      <td colspan="7" class="text-muted text-center">
+        Nenhuma venda registrada para esta data.
+      </td>
+    </tr>
+  {% endif %}
+</tbody>
+  <tfoot>
+    <tr class="table-secondary">
+      <td colspan="2"><strong>Total diário</strong></td>
+      <td colspan="6"><strong>R$ {{ "%.2f"|format(total_diario) }}</strong></td>
+    </tr>
+  </tfoot>
+</table>
+
+</div>
+
+<!-- Dependências -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const campoData = document.getElementById("dataVenda");
+
+  flatpickr("#dataVenda", {
+    dateFormat: "d/m/Y",
+    locale: "pt",
+    defaultDate: "{{ data_sel }}",
+    onClose: function(selectedDates, dateStr, instance) {
+      if (dateStr) {
+        document.getElementById("formData").submit();
+      }
+    }
+  });
+
+  const itemInput = document.getElementById("itemInput");
+  const qtdInput = document.querySelector("input[name='quantidade']");
+  const valorInput = document.querySelector("input[name='valor']");
+  const suggestionBox = document.getElementById("itemSuggestions");
+
+  // 🔹 Filtra sugestões conforme digita (não mostra nada se vazio)
+  itemInput.addEventListener("input", function() {
+    const filtro = this.value.toLowerCase();
+    let temResultado = false;
+
+    if (filtro.length === 0) {
+      suggestionBox.classList.remove("show");
+      return;
+    }
+
+    suggestionBox.querySelectorAll(".dropdown-item").forEach(el => {
+      if (el.textContent.toLowerCase().includes(filtro)) {
+        el.style.display = "block";
+        temResultado = true;
+      } else {
+        el.style.display = "none";
+      }
+    });
+
+    if (temResultado) {
+      suggestionBox.classList.add("show");
+    } else {
+      suggestionBox.classList.remove("show");
+    }
+  });
+
+  // 🔹 Seleção de item pelo dropdown
+  suggestionBox.querySelectorAll(".dropdown-item").forEach(el => {
+    el.addEventListener("click", function(e) {
+      e.preventDefault();
+      itemInput.value = this.textContent;
+      const preco = parseFloat(this.dataset.preco);
+      valorInput.value = preco.toFixed(2);
+      suggestionBox.classList.remove("show");
+    });
+  });
+
+  // 🔹 Atualiza valor conforme quantidade
+  qtdInput.addEventListener("input", function() {
+    const nome = itemInput.value;
+    const opt = [...suggestionBox.querySelectorAll(".dropdown-item")]
+                .find(el => el.textContent === nome);
+    if (opt && qtdInput.value) {
+      const preco = parseFloat(opt.dataset.preco);
+      valorInput.value = (preco * parseFloat(qtdInput.value)).toFixed(2);
+    }
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+  <h2 class="mb-4">Financeiro</h2>
+
+    <!-- Formulário para adicionar despesa -->
+<div class="card mb-4">
+    <div class="card-header">Cadastrar Despesa</div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('financeiro_cadastrar') }}">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Descrição</label>
+                    <input type="text" class="form-control" name="descricao" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Categoria</label>
+                    <select class="form-select" name="categoria" required>
+                        <option value="Operacional">Operacional</option>
+                        <option value="Compra">Compra</option>
+                        <option value="Pessoal">Pessoal</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Valor</label>
+                    <input type="number" step="0.01" class="form-control" name="valor" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Data</label>
+                    <input type="text" id="dataDespesa" class="form-control" name="data" required autocomplete="off">
+                </div>
+            </div>
+
+            <div class="row g-3 mt-3">
+                <div class="col-md-12 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary-salvarvenda">Salvar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+  <!-- Tabela de despesas -->
+<div class="card mb-4">
+  <div class="card-header">Despesas Registradas</div>
+  <div class="card-body">
+    <table class="table table-striped align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Descrição</th>
+          <th>Categoria</th>
+          <th>Valor</th>
+          <th>Data</th>
+          <th class="text-end">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="despesasTable">
+        {% for d in despesas %}
+        <tr class="{% if loop.index > 5 %}d-none extra-despesa{% endif %}">
+          <td>{{ d.descricao }}</td>
+            <td>{{ d.categoria }}</td>
+          <td>R$ {{ "%.2f"|format(d.valor) }}</td>
+          <td>{{ d.data_despesa.strftime("%d/%m/%Y") }}</td>
+          <td class="text-end">
+            <form method="POST" action="{{ url_for('financeiro_excluir') }}" class="d-inline">
+              <input type="hidden" name="conta_id" value="{{ d.id }}">
+              <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if despesas|length > 5 %}
+    <div class="text-center mt-3">
+      <button id="btnToggle" class="btn-primary-toogle">Mais</button>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+  <!-- Gráfico de barras Receitas vs Despesas -->
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>Receitas vs Despesas por Mês</span>
+    <select id="anoSelector" class="form-select w-auto">
+      {% for a in anos %}
+      <option value="{{ a }}" {% if a == ano_inicial %}selected{% endif %}>{{ a }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="card-body">
+    <canvas id="graficoMensal"
+            data-labels="{% for m in meses %}{{ m }}{% if not loop.last %},{% endif %}{% endfor %}"
+            data-receitas="{% for r in receitas_mensais %}{{ r }}{% if not loop.last %},{% endif %}{% endfor %}"
+            data-despesas="{% for d in despesas_mensais %}{{ d }}{% if not loop.last %},{% endif %}{% endfor %}">
+    </canvas>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function csvToArray(str) {
+  if (!str) return [];
+  return str.split(',').map(s => s.trim());
+}
+
+(function() {
+  const el = document.getElementById('graficoMensal');
+  const labels = csvToArray(el.dataset.labels);
+  let receitas = csvToArray(el.dataset.receitas).map(Number);
+  let despesas = csvToArray(el.dataset.despesas).map(Number);
+
+  const ctx = el.getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: 'Receitas', data: receitas, backgroundColor: '#28a745' },
+        { label: 'Despesas', data: despesas, backgroundColor: '#dc3545' }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top' } },
+      scales: { y: { beginAtZero: true, max: 50000 } }
+    }
+  });
+
+  // Atualiza ao trocar o ano
+  document.getElementById('anoSelector').addEventListener('change', function() {
+    const ano = this.value;
+    fetch(`/financeiro_dados/${ano}`)
+      .then(resp => resp.json())
+      .then(data => {
+        chart.data.labels = data.meses;
+        chart.data.datasets[0].data = data.receitas;
+        chart.data.datasets[1].data = data.despesas;
+        chart.update();
+      });
+  });
+})();
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const btn = document.getElementById("btnToggle");
+  if (btn) {
+    btn.addEventListener("click", function() {
+      const extras = document.querySelectorAll(".extra-despesa");
+      const mostrando = extras[0] && !extras[0].classList.contains("d-none");
+
+      if (mostrando) {
+        // Esconde novamente
+        extras.forEach(el => el.classList.add("d-none"));
+        btn.textContent = "Mais";
+      } else {
+        // Mostra todas
+        extras.forEach(el => el.classList.remove("d-none"));
+        btn.textContent = "Menos";
+      }
+    });
+  }
+});
+</script>
+<!-- Dependências -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Calendário de filtro
+  flatpickr("#dataFinanceiro", {
+    dateFormat: "d/m/Y",
+    locale: "pt",
+    months: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
+    weekdays: {
+      shorthand: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"],
+      longhand: ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
+    },
+    placeholder: "dd/mm/aaaa",
+    onChange: function(selectedDates, dateStr, instance) {
+      if (dateStr) {
+        document.getElementById("formData").submit();
+      }
+    }
+  });
+
+  // Calendário de cadastro de despesa
+  flatpickr("#dataDespesa", {
+    dateFormat: "d/m/Y",
+    locale: "pt",
+    months: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
+    weekdays: {
+      shorthand: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"],
+      longhand: ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
+    },
+    placeholder: "dd/mm/aaaa",
+    defaultDate: new Date()
+  });
+});
+</script>
+
+{% endblock %}
