@@ -4,6 +4,7 @@ from datetime import datetime, date
 from collections import defaultdict
 from collections import OrderedDict
 from sqlalchemy import extract, func
+from flask_migrate import Migrate
 import os
 
 # ---------------------
@@ -22,6 +23,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+migrate = Migrate(app, db)
 
 db = SQLAlchemy(app)
 
