@@ -21,11 +21,15 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 # Desativa rastreamento extra
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Cria a instância do banco UMA vez
 db = SQLAlchemy(app)
 
+# Configura migrations
 migrate = Migrate(app, db)
 
-db = SQLAlchemy(app)
+# Se quiser criar tabelas automaticamente
+with app.app_context():
+    db.create_all()
 
 # ---------------------
 # MODELOS
