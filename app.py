@@ -10,12 +10,18 @@ import os
 # CONFIGURAÇÕES
 # ---------------------
 app = Flask(__name__)
-app.secret_key = "chave_secreta_super_secreta"
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-db_path = os.path.join(basedir, 'database', 'loja.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
+# Usa a SECRET_KEY vinda das variáveis de ambiente do Railway
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "chave_secreta_super_secreta")
+
+# Configuração do banco: pega a URL do Railway
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
+
+# Desativa rastreamento extra
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
 
 db = SQLAlchemy(app)
 
