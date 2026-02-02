@@ -298,11 +298,6 @@ def vendas():
         Venda.data_venda <= fim_utc
     ).order_by(Venda.data_venda.asc()).all()
 
-    for venda in vendas:
-        venda.data_venda_br = venda.data_venda.astimezone(tz_br)
-
-    return render_template("vendas.html", vendas=vendas)
-
     # vendas do dia
     vendas = Venda.query.filter(
         Venda.data_venda >= inicio,
