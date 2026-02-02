@@ -289,27 +289,17 @@ def vendas():
     except ValueError:
         data_sel = datetime.now(tz_br).date()
 
-    # início e fim do dia EM BRASÍLIA
-    inicio_br = datetime.combine(
+    inicio = datetime.combine(
         data_sel,
         datetime.min.time(),
         tzinfo=tz_br
     )
 
-    fim_br = datetime.combine(
+    fim = datetime.combine(
         data_sel,
         datetime.max.time(),
         tzinfo=tz_br
     )
-
-    # converte para UTC (padrão do banco)
-    inicio_utc = inicio_br.astimezone(timezone.utc)
-    fim_utc = fim_br.astimezone(timezone.utc)
-
-    vendas = Venda.query.filter(
-        Venda.data_venda >= inicio_utc,
-        Venda.data_venda <= fim_utc
-    ).order_by(Venda.data_venda.asc()).all()
 
     # vendas do dia
     vendas = Venda.query.filter(
