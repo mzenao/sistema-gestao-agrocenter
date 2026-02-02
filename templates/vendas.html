@@ -146,7 +146,7 @@
         <td>{{ v.forma_pagamento|capitalize }}</td>
 
         <!-- Data da venda -->
-        <td>{{ v.data_venda.strftime("%d/%m/%Y - %H:%M") }}</td>
+        <td>{{ v.data_venda_br.strftime("%d/%m/%Y %H:%M") }}</td>
         <td>
   <!-- Botão editar venda -->
           <button class="btn btn-sm btn-outline-primary-venda"
@@ -281,7 +281,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   flatpickr("#dataVenda", {
     dateFormat: "d/m/Y",
-    locale: "br",
+    locale: "pt-BR",
     defaultDate: "{{ data_sel }}",
     onClose: function(selectedDates, dateStr, instance) {
       if (dateStr) {
