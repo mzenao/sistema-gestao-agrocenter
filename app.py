@@ -31,6 +31,7 @@ migrate = Migrate(app, db)
 with app.app_context():
     db.create_all()
 
+
 # ---------------------
 # MODELOS
 # ---------------------
@@ -669,8 +670,7 @@ def financeiro_cadastrar():
     valor = float(request.form.get("valor"))
     data_str = request.form.get("data")
     categoria = request.form.get("categoria")  # novo campo
-    data = datetime.strptime(data_str, "%Y-%m-%d")
-
+    data = datetime.strptime(data_str, "%d-%m-%y")
     nova = Despesa(descricao=descricao, valor=valor, data_despesa=data, categoria=categoria)
     db.session.add(nova)
     db.session.commit()
