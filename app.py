@@ -278,6 +278,9 @@ def vendas():
 
     data_str = request.args.get("data")
 
+    venda_antiga = request.form.get("venda_antiga") == "on"
+    data_str = request.form.get("dataVenda")
+
     try:
         data_sel = (
             datetime.strptime(data_str, "%d/%m/%Y").date()
@@ -297,6 +300,22 @@ def vendas():
         Venda.data_venda >= inicio_utc,
         Venda.data_venda <= fim_utc
     ).order_by(Venda.data_venda.asc()).all()
+
+    # opção venda antiga
+
+    if venda_antiga and data_str:
+        data_base = datetime.strptime(data_str, "%d/%m/%Y").date()
+        hora_atual = datetime.now(tz_br).time()
+
+        data_br = datetime.combine(
+            data_base,
+            hora_atual,
+            tzinfo=tz_br
+        )
+    else:
+        data_br = datetime.now(tz_br)
+
+    vendas.data_venda = data_br.astimezone(timezone.utc)
 
     # vendas do dia (UTC)
     vendas = Venda.query.filter(
