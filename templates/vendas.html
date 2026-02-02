@@ -10,13 +10,7 @@
            value="{{ data_sel }}" autocomplete="off" required>
   </form>
 
-  <!-- opção venda antiga -->
-  <label>
-    <input type="checkbox" id="venda_antiga" name="venda_antiga">
-    Cadastrar venda de outra data
-  </label>
 
-  
   <!-- Formulário de item -->
   <form method="POST" action="{{ url_for('adicionar_item') }}" id="formItem" class="mb-3">
     <div class="row g-3">
@@ -286,13 +280,16 @@
 document.addEventListener("DOMContentLoaded", function() {
   const campoData = document.getElementById("dataVenda");
 
-    flatpickr("#dataVenda", {
+  flatpickr("#dataVenda", {
     dateFormat: "d/m/Y",
     locale: "pt-BR",
-    allowInput: true,
-    maxDate: "today"
+    defaultDate: "{{ data_sel }}",
+    onClose: function(selectedDates, dateStr, instance) {
+      if (dateStr) {
+        document.getElementById("formData").submit();
+      }
+    }
   });
-
 
   const itemInput = document.getElementById("itemInput");
   const qtdInput = document.querySelector("input[name='quantidade']");

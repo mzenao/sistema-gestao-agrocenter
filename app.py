@@ -40,7 +40,7 @@ class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     usuario = db.Column(db.String(100), unique=True, nullable=False)
     senha = db.Column(db.String(100), nullable=False)
-    data_cadastro = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    data_cadastro = db.Column(db.DateTime, default=datetime.now)
 
 
 class Categoria(db.Model):
@@ -278,9 +278,6 @@ def vendas():
 
     data_str = request.args.get("data")
 
-    venda_antiga = request.form.get("venda_antiga") == "on"
-    data_str = request.form.get("dataVenda")
-
     try:
         data_sel = (
             datetime.strptime(data_str, "%d/%m/%Y").date()
@@ -290,42 +287,23 @@ def vendas():
     except ValueError:
         data_sel = datetime.now(tz_br).date()
 
-    inicio = datetime.combine(data_sel, datetime.min.time(), tzinfo=tz_br)
-    fim = datetime.combine(data_sel, datetime.max.time(), tzinfo=tz_br)
+    inicio = datetime.combine(
+        data_sel,
+        datetime.min.time(),
+        tzinfo=tz_br
+    )
 
-    inicio_utc = inicio.astimezone(timezone.utc)
-    fim_utc = fim.astimezone(timezone.utc)
+    fim = datetime.combine(
+        data_sel,
+        datetime.max.time(),
+        tzinfo=tz_br
+    )
 
+    # vendas do dia
     vendas = Venda.query.filter(
-        Venda.data_venda >= inicio_utc,
-        Venda.data_venda <= fim_utc
+        Venda.data_venda >= inicio,
+        Venda.data_venda <= fim
     ).order_by(Venda.data_venda.asc()).all()
-
-    # opção venda antiga
-
-    if venda_antiga and data_str:
-        data_base = datetime.strptime(data_str, "%d/%m/%Y").date()
-        hora_atual = datetime.now(tz_br).time()
-
-        data_br = datetime.combine(
-            data_base,
-            hora_atual,
-            tzinfo=tz_br
-        )
-    else:
-        data_br = datetime.now(tz_br)
-
-    vendas.data_venda = data_br.astimezone(timezone.utc)
-
-    # vendas do dia (UTC)
-    vendas = Venda.query.filter(
-        Venda.data_venda >= inicio_utc,
-        Venda.data_venda <= fim_utc
-    ).order_by(Venda.data_venda.asc()).all()
-
-    # converte data das vendas para Brasília
-    for v in vendas:
-        v.data_venda_br = v.data_venda.astimezone(tz_br)
 
     # itens disponíveis
     itens = Item.query.order_by(Item.nome.asc()).all()
@@ -341,10 +319,7 @@ def vendas():
             total_diario += (vi.valor_venda - vi.desconto + vi.acrescimo)
 
     # lista serializável de itens
-    itens_json = [
-        {"nome": i.nome, "preco_venda": i.preco_venda}
-        for i in itens
-    ]
+    itens_json = [{"nome": i.nome, "preco_venda": i.preco_venda} for i in itens]
 
     # 🔹 retorno único
     return render_template(
