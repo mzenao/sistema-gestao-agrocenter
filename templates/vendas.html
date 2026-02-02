@@ -10,7 +10,6 @@
            value="{{ data_sel }}" autocomplete="off" required>
   </form>
 
-
   <!-- Formulário de item -->
   <form method="POST" action="{{ url_for('adicionar_item') }}" id="formItem" class="mb-3">
     <div class="row g-3">
@@ -147,7 +146,7 @@
         <td>{{ v.forma_pagamento|capitalize }}</td>
 
         <!-- Data da venda -->
-        <td>{{ v.data_venda_br.strftime("%d/%m/%Y %H:%M") }}</td>
+        <td>{{ v.data_venda.strftime("%d/%m/%Y - %H:%M") }}</td>
         <td>
   <!-- Botão editar venda -->
           <button class="btn btn-sm btn-outline-primary-venda"
