@@ -670,7 +670,7 @@ def financeiro_cadastrar():
     valor = float(request.form.get("valor"))
     data_str = request.form.get("data")
     categoria = request.form.get("categoria")  # novo campo
-    data = datetime.strptime(data_str, "%d-%m-%y")
+    data = datetime.strptime(data_str, "%d/%m/%Y")
     nova = Despesa(descricao=descricao, valor=valor, data_despesa=data, categoria=categoria)
     db.session.add(nova)
     db.session.commit()
