@@ -5,7 +5,8 @@ from collections import defaultdict
 from collections import OrderedDict
 from sqlalchemy import extract, func
 from flask_migrate import Migrate
-from _zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo
+from datetime import datetime
 import os
 
 # ---------------------
