@@ -5,6 +5,7 @@ from collections import defaultdict
 from collections import OrderedDict
 from sqlalchemy import extract, func
 from flask_migrate import Migrate
+from _zoneinfo import ZoneInfo
 import os
 
 # ---------------------
@@ -273,14 +274,30 @@ def vendas():
     if "usuario_id" not in session:
         return redirect(url_for("login"))
 
-    data_str = request.args.get("data")
-    try:
-        data_sel = datetime.strptime(data_str, "%d/%m/%Y").date() if data_str else datetime.today().date()
-    except ValueError:
-        data_sel = datetime.today().date()
+    tz_br = ZoneInfo("America/Sao_Paulo")
 
-    inicio = datetime.combine(data_sel, datetime.min.time())
-    fim = datetime.combine(data_sel, datetime.max.time())
+    data_str = request.args.get("data")
+
+    try:
+        data_sel = (
+            datetime.strptime(data_str, "%d/%m/%Y").date()
+            if data_str
+            else datetime.now(tz_br).date()
+        )
+    except ValueError:
+        data_sel = datetime.now(tz_br).date()
+
+    inicio = datetime.combine(
+        data_sel,
+        datetime.min.time(),
+        tzinfo=tz_br
+    )
+
+    fim = datetime.combine(
+        data_sel,
+        datetime.max.time(),
+        tzinfo=tz_br
+    )
 
     # vendas do dia
     vendas = Venda.query.filter(
