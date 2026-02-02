@@ -298,11 +298,15 @@ def vendas():
         Venda.data_venda <= fim_utc
     ).order_by(Venda.data_venda.asc()).all()
 
-    # vendas do dia
+    # vendas do dia (UTC)
     vendas = Venda.query.filter(
-        Venda.data_venda >= inicio,
-        Venda.data_venda <= fim
+        Venda.data_venda >= inicio_utc,
+        Venda.data_venda <= fim_utc
     ).order_by(Venda.data_venda.asc()).all()
+
+    # converte data das vendas para Brasília
+    for v in vendas:
+        v.data_venda_br = v.data_venda.astimezone(tz_br)
 
     # itens disponíveis
     itens = Item.query.order_by(Item.nome.asc()).all()
@@ -318,7 +322,10 @@ def vendas():
             total_diario += (vi.valor_venda - vi.desconto + vi.acrescimo)
 
     # lista serializável de itens
-    itens_json = [{"nome": i.nome, "preco_venda": i.preco_venda} for i in itens]
+    itens_json = [
+        {"nome": i.nome, "preco_venda": i.preco_venda}
+        for i in itens
+    ]
 
     # 🔹 retorno único
     return render_template(
