@@ -1,12 +1,11 @@
 from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from collections import defaultdict
 from collections import OrderedDict
 from sqlalchemy import extract, func
 from flask_migrate import Migrate
 from zoneinfo import ZoneInfo
-from datetime import datetime
 import os
 
 # ---------------------
@@ -41,7 +40,7 @@ class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     usuario = db.Column(db.String(100), unique=True, nullable=False)
     senha = db.Column(db.String(100), nullable=False)
-    data_cadastro = db.Column(db.DateTime, default=datetime.now)
+    data_cadastro = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
 
 class Categoria(db.Model):
@@ -288,17 +287,21 @@ def vendas():
     except ValueError:
         data_sel = datetime.now(tz_br).date()
 
-    inicio = datetime.combine(
-        data_sel,
-        datetime.min.time(),
-        tzinfo=tz_br
-    )
+    inicio = datetime.combine(data_sel, datetime.min.time(), tzinfo=tz_br)
+    fim = datetime.combine(data_sel, datetime.max.time(), tzinfo=tz_br)
 
-    fim = datetime.combine(
-        data_sel,
-        datetime.max.time(),
-        tzinfo=tz_br
-    )
+    inicio_utc = inicio.astimezone(timezone.utc)
+    fim_utc = fim.astimezone(timezone.utc)
+
+    vendas = Venda.query.filter(
+        Venda.data_venda >= inicio_utc,
+        Venda.data_venda <= fim_utc
+    ).order_by(Venda.data_venda.asc()).all()
+
+    for venda in vendas:
+        venda.data_venda_br = venda.data_venda.astimezone(tz_br)
+
+    return render_template("vendas.html", vendas=vendas)
 
     # vendas do dia
     vendas = Venda.query.filter(
