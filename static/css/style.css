@@ -3,6 +3,10 @@ footer {
   bottom: 0;
 }
 
+body {
+  padding-bottom: 80px; /* ajuste à altura do footer */
+}
+
 /* ------------------------- Index ----------------------- */
 
 /* Efeito hover para cartões */
