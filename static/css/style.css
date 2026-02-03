@@ -560,10 +560,11 @@ button.btn-close {
                 radial-gradient(circle at 40% 80%, #2eb82e 0%, #3ed33e 70%),
                 radial-gradient(circle at 70% 70%, #0b6c0b 0%, #6ac96a 70%);
     background-size: 200% 200%;
+    border-radius: 5px;
     animation: move1 20s ease infinite, move2 30s ease infinite;
     color: #ffffff;
     border: none;
-    padding: 10px 20px;
+    padding: 10px 10px;
     font-weight: bold;
     transition: transform 0.3s ease, color 0.3s ease;
     width: 10%;
