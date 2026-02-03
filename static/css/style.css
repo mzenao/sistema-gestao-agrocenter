@@ -561,16 +561,16 @@ button.btn-close {
                 radial-gradient(circle at 70% 70%, #0b6c0b 0%, #6ac96a 70%);
     background-size: 200% 200%;
     animation: move1 20s ease infinite, move2 30s ease infinite;
-    color: #ffffff !important;
+    color: #ffffff;
     border: none;
-    padding: 0px 19px !important;
-    font-weight: bold !important;
-    transition: transform 0.3s ease, color 0.3s ease !important;
-    width: 12%;
-    height: 100%;
-    margin-top: 0%;
-    border: 2px solid #0d7d20 !important;
-    box-shadow: 0 0 5px rgba(13, 125, 32, 0.5) !important;
+    padding: 10px 20px;
+    font-weight: bold;
+    transition: transform 0.3s ease, color 0.3s ease;
+    width: 10%;
+    height: 10%;
+    margin-top: 0.80%;
+    border: 2px solid #0d7d20;
+    box-shadow: 0 0 5px rgba(13, 125, 32, 0.5);
 }
 
 .btn-success-venda:hover {
