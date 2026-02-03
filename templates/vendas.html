@@ -276,6 +276,20 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 
 <script>
+document.getElementById("formFinalizar").addEventListener("submit", function () {
+    const data = document.getElementById("dataVenda").value;
+
+    // cria input escondido só na hora do submit
+    const hidden = document.createElement("input");
+    hidden.type = "hidden";
+    hidden.name = "data_venda";
+    hidden.value = data;
+
+    this.appendChild(hidden);
+});
+</script>
+
+<script>
 document.addEventListener("DOMContentLoaded", function() {
   const campoData = document.getElementById("dataVenda");
 

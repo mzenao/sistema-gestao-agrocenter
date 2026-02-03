@@ -393,11 +393,32 @@ def adicionar_item():
 
 @app.route("/carrinho/finalizar", methods=["POST"])
 def concluir_venda():
+    tz_br = ZoneInfo("America/Sao_Paulo")
+
     forma_pagamento = request.form.get("forma_pagamento", "dinheiro")
+    data_str = request.form.get("data_venda")  # ← agora existe
     carrinho = session.get("carrinho", [])
 
     if not carrinho:
         flash("Carrinho vazio.", "danger")
+        return redirect(url_for("vendas"))
+
+    # 📅 define a data da venda
+    if data_str:
+        data_base = datetime.strptime(data_str, "%d/%m/%Y").date()
+        hora_atual = datetime.now(tz_br).time()
+
+        data_venda_br = datetime.combine(
+            data_base,
+            hora_atual,
+            tzinfo=tz_br
+        )
+    else:
+        data_venda_br = datetime.now(tz_br)
+
+    # 🔐 bloqueia datas futuras
+    if data_venda_br > datetime.now(tz_br):
+        flash("Data da venda inválida.", "danger")
         return redirect(url_for("vendas"))
 
     valor_total = sum(i["valor_venda"] for i in carrinho)
@@ -407,8 +428,9 @@ def concluir_venda():
         forma_pagamento=forma_pagamento,
         valor_total=valor_total,
         lucro_total=lucro_total,
-        data_venda=datetime.now()
+        data_venda=data_venda_br.astimezone(timezone.utc)  # ✅ correto
     )
+
     db.session.add(venda)
     db.session.flush()
 
@@ -426,8 +448,9 @@ def concluir_venda():
 
     db.session.commit()
     session.pop("carrinho", None)
+
     flash("Venda concluída!", "success")
-    return redirect(url_for("vendas"))
+    return redirect(url_for("vendas", data=data_str))
 
 @app.route("/cancelar_venda", methods=["POST"])
 def cancelar_venda():
