@@ -56,6 +56,10 @@
     <div class="mt-3">
       <button type="submit" class="btn btn-primary-venda">Adicionar item</button>
     </div>
+
+    <div>
+      <input type="hidden" name="data" id="dataVendaHidden" value="{{ data_sel }}">
+    </div>
   </form>
 
   <!-- Card de resumo do carrinho -->
@@ -85,7 +89,6 @@
         <option value="credito">Crédito</option>
         <option value="pix">Pix</option>
       </select>
-      <button type="submit" class="btn btn-success-venda">Concluir venda</button>
     </div>
   </form>
 
