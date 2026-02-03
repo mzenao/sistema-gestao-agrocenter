@@ -73,6 +73,7 @@
     {% else %}
       <p class="text-muted mb-0">Nenhum item adicionado.</p>
     {% endif %}
+    <input type="hidden" name="data" id="dataHidden">
   </div>
 
   <!-- Concluir venda -->
@@ -287,6 +288,16 @@ document.getElementById("formFinalizar").addEventListener("submit", function () 
 
     this.appendChild(hidden);
 });
+</script>
+
+<script>
+function syncData() {
+    document.getElementById("dataHidden").value =
+        document.getElementById("dataVenda").value;
+}
+
+document.getElementById("dataVenda").addEventListener("change", syncData);
+syncData();
 </script>
 
 <script>

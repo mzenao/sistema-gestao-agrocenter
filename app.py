@@ -388,7 +388,9 @@ def adicionar_item():
     session["carrinho"] = carrinho
 
     flash("Item adicionado ao carrinho.", "success")
-    return redirect(url_for("vendas"))
+    data = request.form.get("data") or request.args.get("data")
+    return redirect(url_for("vendas", data=data))
+
 
 
 @app.route("/carrinho/finalizar", methods=["POST"])
