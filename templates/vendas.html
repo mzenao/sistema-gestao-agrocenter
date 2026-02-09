@@ -157,22 +157,7 @@
         <td>
 
   <!-- Botão Checkbox Conferir Caixa-->
-          <button type="checkbox" class="btn btn-sm btn-outline-secondary-venda">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                fill="currentColor" class="bi bi-check2-square" viewBox="0 0 16 16"
-                style="pointer-events:none;">
-              <path d="M2.5 0A2.5 2.5 0 0 0 0 2.5v11A2.5 2.5 0 0 0 
-                      2.5 16h11a2.5 2.5 0 0 0 2.5-2.5v-11A2.5 
-                      2.5 0 0 0 13.5 0h-11zm9.28 
-                      4.28a.75.75 0 1 1-1.06 
-                      1.06L7.477 
-                      8.477l-1.72-1.72a.75.75 
-                      0 1 1-1.06 
-                      -1.06l2.25 
-                      2.25a.75.75 
-                      0 0 1 
-                      .011 .011l4-4z"/>
-            </svg>
+          <input type="checkbox" class="form-check-input" {% if v.conferido %}checked{% endif %}>
   <!-- Botão editar venda -->
           <button class="btn btn-sm btn-outline-primary-venda"
                   data-bs-toggle="modal"
