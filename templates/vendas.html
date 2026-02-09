@@ -155,6 +155,19 @@
         <!-- Data da venda -->
         <td>{{ v.data_venda_br.strftime("%d/%m/%Y %H:%M") }}</td>
         <td>
+
+  <!-- Botão Checkbox Conferir Caixa-->
+          <form method="POST" action="{{ url_for('conferir_caixa') }}" style="display:inline;">
+            <input type="hidden" name="venda_id" value="{{ v.id }}">
+            <button type="submit" class="btn btn-sm btn-outline-success-venda">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                  fill="currentColor" class="bi bi-check2-square" viewBox="0 0 16 16"
+                  style="pointer-events:none;">
+                <path d="M2.5 0c-.166 0-.33.033-.48.098A2.5 2.5 0 0 0 
+                        .098.48C.033.63 0 .794 0 .96v14.08c0 .166.033.33.098.48A2.5 2.5 0 0 0 .48 16h14.08c.166 0 .33-.033.48-.098a2.5 2.5 0 0 0 .48-1.92V1.92c0-.166-.033-.33-.098-.48A2.5 2.5 0 0 0 15.52 0H2.5z"/>
+              </svg>
+            </button>
+          </form>
   <!-- Botão editar venda -->
           <button class="btn btn-sm btn-outline-primary-venda"
                   data-bs-toggle="modal"
