@@ -215,7 +215,8 @@
                       <label for="forma_pagamento{{ v.id }}" class="form-label">Forma de Pagamento</label>
                       <select class="form-select" name="forma_pagamento" id="forma_pagamento{{ v.id }}">
                         <option value="dinheiro" {% if v.forma_pagamento == 'dinheiro' %}selected{% endif %}>Dinheiro</option>
-                        <option value="cartao" {% if v.forma_pagamento == 'cartao' %}selected{% endif %}>Cartão</option>
+                        <option value="débito" {% if v.forma_pagamento == 'débito' %}selected{% endif %}>Débito</option>
+                        <option value="crédito" {% if v.forma_pagamento == 'crédito' %}selected{% endif %}>Crédito</option>
                         <option value="pix" {% if v.forma_pagamento == 'pix' %}selected{% endif %}>Pix</option>
                       </select>
                     </div>
