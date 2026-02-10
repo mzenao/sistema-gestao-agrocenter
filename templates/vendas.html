@@ -158,7 +158,7 @@
 
   <!-- Botão Checkbox Conferir Caixa-->
           <input type="checkbox" class="form-check-input" {% if v.conferido %}checked{% endif %}>
-          <script>localStorage.setItem("venda_{{ v.id }}", "conferida");</script>
+          <script>localStorage.setItem('venda_{{ v.id }}', this.checked);</script>
   <!-- Botão editar venda -->
           <button class="btn btn-sm btn-outline-primary-venda"
                   data-bs-toggle="modal"
