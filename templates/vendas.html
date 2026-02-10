@@ -157,8 +157,21 @@
         <td>
 
   <!-- Botão Checkbox Conferir Caixa-->
-          <input type="checkbox" class="form-check-input" {% if v.conferido %}checked{% endif %}>
-          <script>localStorage.setItem('venda_{{ v.id }}', this.checked);</script>
+          <input type="checkbox" class="form-check-input" id="venda_{{ v.id }}">>
+          <script>
+            const checkbox = document.getElementById("venda_{{ v.id }}");
+
+            // Carrega o estado salvo
+            const salvo = localStorage.getItem("venda_{{ v.id }}");
+            if (salvo === "true") {
+              checkbox.checked = true;
+            }
+
+            // Salva quando clicar
+            checkbox.addEventListener("change", function () {
+              localStorage.setItem("venda_{{ v.id }}", this.checked);
+            });
+          </script>
   <!-- Botão editar venda -->
           <button class="btn btn-sm btn-outline-primary-venda"
                   data-bs-toggle="modal"
