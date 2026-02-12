@@ -729,6 +729,9 @@ table.table tfoot tr.table-secondary td {
     color: #0b6c0b;
 }
 
+checkbox {
+    margin-top: 2px;
+}
 /* ------------------------- Financeiro ----------------------- */
 
 .card.mb-4:hover {
