@@ -32,7 +32,6 @@ migrate = Migrate(app, db)
 with app.app_context():
     db.create_all()
 
-
 # ---------------------
 # MODELOS
 # ---------------------
@@ -65,6 +64,7 @@ class Venda(db.Model):
     data_venda = db.Column(db.DateTime, default=datetime.now)
     valor_total = db.Column(db.Float, nullable=False)
     lucro_total = db.Column(db.Float, nullable=False)
+    conferido = db.Column(db.Boolean, default=False, nullable=False)
     itens = db.relationship("VendaItem", backref="venda", cascade="all, delete-orphan")
 
 
@@ -525,6 +525,20 @@ def editar_venda():
 
     flash("Venda atualizada com sucesso!", "success")
     return redirect(url_for("vendas"))
+
+@app.route("/conferir_venda", methods=["POST"])
+def conferir_venda():
+    data = request.get_json()
+
+    venda = Venda.query.get(data["id"])
+
+    if venda:
+        venda.conferido = data["conferido"]
+        db.session.commit()
+        return {"success": True}
+
+    return {"success": False}, 404
+
 
 @app.route("/itens", methods=["GET"])
 def itens():
