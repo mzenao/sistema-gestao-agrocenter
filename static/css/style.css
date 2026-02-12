@@ -741,7 +741,7 @@ td.acoes {
     width: 18px;
     height: 18px;
     cursor: pointer;
-    margin-top: 5%;
+    padding: 5%;
 }
 /* ------------------------- Financeiro ----------------------- */
 
