@@ -729,8 +729,19 @@ table.table tfoot tr.table-secondary td {
     color: #0b6c0b;
 }
 
-checkbox {
-    margin-top: 2px;
+/* coluna de ações */
+td.acoes {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* checkbox */
+.checkbox-conferido {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    margin: 0;
 }
 /* ------------------------- Financeiro ----------------------- */
 
