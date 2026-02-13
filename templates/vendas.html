@@ -134,6 +134,11 @@
             R$ {{ "%.2f"|format(vi.valor_venda) }}<br>
           {% endfor %}
         </td>
+        
+        <!-- Coluna de Valor Total-->
+        <td>
+          R$ {{ "%.2f"|format(v.valor_total) }}
+        </td>
 
         <!-- Coluna de descontos -->
         <td>
