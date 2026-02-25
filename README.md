@@ -7,7 +7,9 @@ O projeto está em uso real e recebe melhorias contínuas conforme necessidade d
 
 ## 📌 Sobre o Projeto
 
-O Sistema de Gestão Agrocenter foi desenvolvido com o objetivo de organizar e automatizar processos de um comércio, permitindo:
+O Sistema de Gestão Agrocenter foi desenvolvido com o objetivo de otimizar rotinas operacionais, reduzir erros manuais e melhorar o controle administrativo do estabelecimento.
+
+A aplicação permite:
 
 - Cadastro de produtos
 - Cadastro de clientes
@@ -15,7 +17,7 @@ O Sistema de Gestão Agrocenter foi desenvolvido com o objetivo de organizar e a
 - Controle de estoque
 - Armazenamento de dados em banco de dados relacional
 
-O sistema está em funcionamento e sendo utilizado em ambiente real.
+O sistema está atualmente em funcionamento em ambiente real, com manutenção e ajustes evolutivos realizados periodicamente.
 
 ---
 
