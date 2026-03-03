@@ -88,37 +88,46 @@
 </div>
 
   <!-- Comparação Tipos de Despesa-->
-<div class="card mb-4"></div>
-  <div class="card-header">Total por Despesas (mês)
-    <select id="categoriaSelector" class="form-select w-auto">
-      {% for m in mes %}
-      <option value="{{ m }}" {% if m == mes_selecionado %}selected{% endif %}>{{ m }}</option>
-      {% endfor %}
-    </select>
-  </div>
-  <div class="card-body">
-    <table class="table table-bordered align-middle">
-      <thead class="table-light">
-        <tr>
-          <th>Categoria</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Operacional</td>
-          <td>R$ {{ "%.2f"|format(total_operacional) }}</td>
-        </tr>
-        <tr>
-          <td>Pessoal</td>
-          <td>R$ {{ "%.2f"|format(total_pessoal) }}</td>
-        </tr>
-        <tr>
-          <td>Compra</td>
-          <td>R$ {{ "%.2f"|format(total_compra) }}</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span>Total por Despesas</span>
+      <div class="d-flex">
+        <select id="anoTotaisSelector" class="form-select w-auto me-2">
+          {% for a in anos %}
+          <option value="{{ a }}" {% if a == ano_totais %}selected{% endif %}>{{ a }}</option>
+          {% endfor %}
+        </select>
+        <select id="mesTotaisSelector" class="form-select w-auto">
+          {% set nomes_meses = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"] %}
+          {% for i in range(1,13) %}
+          <option value="{{ i }}" {% if i == mes_totais %}selected{% endif %}>{{ nomes_meses[i-1] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="card-body">
+      <table class="table table-bordered align-middle" id="tabelaTotais">
+        <thead class="table-light">
+          <tr>
+            <th>Categoria</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Operacional</td>
+            <td id="tot-operacional">R$ {{ "%.2f"|format(total_operacional_mensal) }}</td>
+          </tr>
+          <tr>
+            <td>Pessoal</td>
+            <td id="tot-pessoal">R$ {{ "%.2f"|format(total_pessoal_mensal) }}</td>
+          </tr>
+          <tr>
+            <td>Compra</td>
+            <td id="tot-compra">R$ {{ "%.2f"|format(total_compra_mensal) }}</td>
+          </tr>
+        </tbody>
+      </table>
   <!-- Gráfico de barras Receitas vs Despesas -->
 <div class="card mb-4">
   <div class="card-header d-flex justify-content-between align-items-center">
@@ -196,6 +205,29 @@ function csvToArray(str) {
       window.location.search = params.toString();
     });
   }
+
+  // Atualiza totais por categoria ao trocar ano/mes
+  function atualizarTotais() {
+    const anoT = document.getElementById('anoTotaisSelector').value;
+    const mesT = document.getElementById('mesTotaisSelector').value;
+    // update query string so preferences persist on refresh
+    const params = new URLSearchParams(window.location.search);
+    params.set('ano', anoT);
+    params.set('mes', mesT);
+    window.history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
+    fetch(`/financeiro_totais?ano=${anoT}&mes=${mesT}`)
+      .then(resp => resp.json())
+      .then(data => {
+        document.getElementById('tot-operacional').textContent = 'R$ ' + data.Operacional.toFixed(2);
+        document.getElementById('tot-pessoal').textContent = 'R$ ' + data.Pessoal.toFixed(2);
+        document.getElementById('tot-compra').textContent = 'R$ ' + data.Compra.toFixed(2);
+      });
+  }
+
+  const anoTot = document.getElementById('anoTotaisSelector');
+  const mesTot = document.getElementById('mesTotaisSelector');
+  if (anoTot) anoTot.addEventListener('change', atualizarTotais);
+  if (mesTot) mesTot.addEventListener('change', atualizarTotais);
 })();
 </script>
 <script>

@@ -730,18 +730,18 @@ def financeiro():
         receitas_mensais = [0 for _ in range(12)]
         despesas_mensais = [0 for _ in range(12)]
 
-    # caucula o saldo por ano
-
+    # calculate cumulative totals by category (yearly/all-time)
     total_operacional = sum(d.valor for d in todas_despesas if d.categoria == "Operacional")
     total_pessoal = sum(d.valor for d in todas_despesas if d.categoria == "Pessoal")
     total_compra = sum(d.valor for d in todas_despesas if d.categoria == "Compra")
 
-    # caucula o total por categoria para o mês selecionado
-    mes_selecionado = request.args.get("mes", "Todos")
-    if mes_selecionado != "Todos":
-        despesas_mensal = [d for d in todas_despesas if d.data_despesa.month == int(mes_selecionado)]
-    else:
-        despesas_mensal = todas_despesas
+    # calculate totals for the selected year/month
+    ano_totais = int(request.args.get("ano", datetime.now().year))
+    mes_totais = int(request.args.get("mes", datetime.now().month))
+    despesas_mensal = [
+        d for d in todas_despesas
+        if d.data_despesa.year == ano_totais and d.data_despesa.month == mes_totais
+    ]
 
     total_operacional_mensal = sum(d.valor for d in despesas_mensal if d.categoria == "Operacional")
     total_pessoal_mensal = sum(d.valor for d in despesas_mensal if d.categoria == "Pessoal")
@@ -763,7 +763,8 @@ def financeiro():
         total_compra=total_compra,
         categorias=categorias,
         categoria_selecionada=selecionada,
-        mes_selecionado=mes_selecionado,
+        ano_totais=ano_totais,
+        mes_totais=mes_totais,
         total_operacional_mensal=total_operacional_mensal,
         total_pessoal_mensal=total_pessoal_mensal,
         total_compra_mensal=total_compra_mensal
@@ -830,6 +831,25 @@ def financeiro_dados(ano):
     despesas = [saldos_por_ano.get(ano, {}).get(m, {"despesas": 0})["despesas"] for m in range(1, 13)]
 
     return jsonify({"meses": meses, "receitas": receitas, "despesas": despesas})
+
+
+@app.route("/financeiro_totais")
+def financeiro_totais():
+    # retorna totais por categoria para um ano/mês especificado (ou valores atuais)
+    ano = int(request.args.get("ano", datetime.now().year))
+    mes = int(request.args.get("mes", datetime.now().month))
+
+    despesas = Despesa.query.filter(
+        db.extract('year', Despesa.data_despesa) == ano,
+        db.extract('month', Despesa.data_despesa) == mes
+    ).all()
+
+    totais = {
+        "Operacional": sum(d.valor for d in despesas if d.categoria == "Operacional"),
+        "Pessoal": sum(d.valor for d in despesas if d.categoria == "Pessoal"),
+        "Compra": sum(d.valor for d in despesas if d.categoria == "Compra"),
+    }
+    return jsonify(totais)
 
 # ---------------------
 # MAIN
