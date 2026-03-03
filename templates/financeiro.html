@@ -43,7 +43,13 @@
 
   <!-- Tabela de despesas -->
 <div class="card mb-4">
-  <div class="card-header">Despesas Registradas</div>
+  <div class="card-header">Despesas Registradas
+    <select id="categoriaSelector" class="form-select w-auto">
+      {% for c in categorias %}
+      <option value="{{ c }}" {% if c == categoria_inicial %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </div>
   <div class="card-body">
     <table class="table table-striped align-middle">
       <thead class="table-light">
@@ -54,11 +60,6 @@
           <th>Data</th>
           <th class="text-end">Ações</th>
         </tr>
-          <select id="categoriaSelector" class="form-select w-auto">
-            {% for c in categoria %}
-            <option value="{{ c }}" {% if c == categoria_inicial %}selected{% endif %}>{{ c }}</option>
-            {% endfor %}
-          </select>
       </thead>
       <tbody id="despesasTable">
         {% for d in despesas %}
