@@ -93,12 +93,18 @@
         </tr>
       </thead>
       <tbody>
-        {% for categoria, total in despesas_por_categoria.items() %}
         <tr>
-          <td>{{ categoria }}</td>
-          <td>R$ {{ "%.2f"|format(total) }}</td>
+          <td>Operacional</td>
+          <td>R$ {{ "%.2f"|format(total_operacional) }}</td>
         </tr>
-        {% endfor %}
+        <tr>
+          <td>Pessoal</td>
+          <td>R$ {{ "%.2f"|format(total_pessoal) }}</td>
+        </tr>
+        <tr>
+          <td>Compra</td>
+          <td>R$ {{ "%.2f"|format(total_compra) }}</td>
+        </tr>
       </tbody>
     </table>
   <!-- Gráfico de barras Receitas vs Despesas -->

@@ -718,6 +718,14 @@ def financeiro():
         receitas_mensais = [0 for _ in range(12)]
         despesas_mensais = [0 for _ in range(12)]
 
+    for d in despesas:
+        if d.categoria == "Operacional":
+            total_operacional = sum(d.valor for d in despesas if d.categoria == "Operacional")
+        elif d.categoria == "Pessoal":
+            total_pessoal = sum(d.valor for d in despesas if d.categoria == "Pessoal")
+        elif d.categoria == "Compra":
+            total_compra = sum(d.valor for d in despesas if d.categoria == "Compra")
+            
     return render_template(
         "financeiro.html",
         despesas=despesas,
@@ -726,7 +734,10 @@ def financeiro():
         meses=meses,
         receitas_mensais=receitas_mensais,
         despesas_mensais=despesas_mensais,
-        saldos_por_ano=saldos_por_ano
+        saldos_por_ano=saldos_por_ano,
+        total_operacional=total_operacional,
+        total_pessoal=total_pessoal,
+        total_compra=total_compra
     )
 
 
