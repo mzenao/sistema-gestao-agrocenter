@@ -89,7 +89,13 @@
 
   <!-- Comparação Tipos de Despesa-->
 <div class="card mb-4"></div>
-  <div class="card-header">Total por Despesas (ano)</div>
+  <div class="card-header">Total por Despesas (mês)
+    <select id="categoriaSelector" class="form-select w-auto">
+      {% for m in mes %}
+      <option value="{{ m }}" {% if m == mes_selecionado %}selected{% endif %}>{{ m }}</option>
+      {% endfor %}
+    </select>
+  </div>
   <div class="card-body">
     <table class="table table-bordered align-middle">
       <thead class="table-light">

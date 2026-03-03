@@ -730,10 +730,24 @@ def financeiro():
         receitas_mensais = [0 for _ in range(12)]
         despesas_mensais = [0 for _ in range(12)]
 
-    # compute totals from all despesas regardless of filter
+    # caucula o saldo por ano
+
     total_operacional = sum(d.valor for d in todas_despesas if d.categoria == "Operacional")
     total_pessoal = sum(d.valor for d in todas_despesas if d.categoria == "Pessoal")
     total_compra = sum(d.valor for d in todas_despesas if d.categoria == "Compra")
+
+    # caucula o total por categoria para o mês selecionado
+    mes_selecionado = request.args.get("mes", "Todos")
+    if mes_selecionado != "Todos":
+        despesas_mensal = [d for d in todas_despesas if d.data_despesa.month == int(mes_selecionado)]
+    else:
+        despesas_mensal = todas_despesas
+
+    total_operacional_mensal = sum(d.valor for d in despesas_mensal if d.categoria == "Operacional")
+    total_pessoal_mensal = sum(d.valor for d in despesas_mensal if d.categoria == "Pessoal")
+    total_compra_mensal = sum(d.valor for d in despesas_mensal if d.categoria == "Compra")
+
+    
 
     return render_template(
         "financeiro.html",
@@ -748,7 +762,12 @@ def financeiro():
         total_pessoal=total_pessoal,
         total_compra=total_compra,
         categorias=categorias,
-        categoria_selecionada=selecionada
+        categoria_selecionada=selecionada,
+        mes_selecionado=mes_selecionado,
+        total_operacional_mensal=total_operacional_mensal,
+        total_pessoal_mensal=total_pessoal_mensal,
+        total_compra_mensal=total_compra_mensal
+        
     )
 
 
