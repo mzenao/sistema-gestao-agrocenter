@@ -54,6 +54,11 @@
           <th>Data</th>
           <th class="text-end">Ações</th>
         </tr>
+          <select id="categoriaSelector" class="form-select w-auto">
+            {% for c in categoria %}
+            <option value="{{ c }}" {% if c == categoria_inicial %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
       </thead>
       <tbody id="despesasTable">
         {% for d in despesas %}
@@ -83,7 +88,7 @@
 
   <!-- Comparação Tipos de Despesa-->
 <div class="card mb-4"></div>
-  <div class="card-header">Comparação de Tipos de Despesa</div>
+  <div class="card-header">Total por Despesas (ano)</div>
   <div class="card-body">
     <table class="table table-bordered align-middle">
       <thead class="table-light">
