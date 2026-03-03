@@ -43,10 +43,10 @@
 
   <!-- Tabela de despesas -->
 <div class="card mb-4">
-  <div class="card-header">Despesas Registradas
+  <div class="card-header d-flex align-items-center justify-content-between">Despesas Registradas
     <select id="categoriaSelector" class="form-select w-auto">
-      {% for c in categorias %}
-      <option value="{{ c }}" {% if c == categoria_inicial %}selected{% endif %}>{{ c }}</option>
+      {% for cat in categorias %}
+      <option value="{{ cat }}" {% if cat == categoria_selecionada %}selected{% endif %}>{{ cat }}</option>
       {% endfor %}
     </select>
   </div>
@@ -175,6 +175,21 @@ function csvToArray(str) {
         chart.update();
       });
   });
+
+  // Atualiza ao trocar a categoria (recarrega a página com parâmetro GET)
+  const catSel = document.getElementById('categoriaSelector');
+  if (catSel) {
+    catSel.addEventListener('change', function() {
+      const cat = this.value;
+      const params = new URLSearchParams(window.location.search);
+      if (cat && cat !== 'Todas') {
+        params.set('categoria', cat);
+      } else {
+        params.delete('categoria');
+      }
+      window.location.search = params.toString();
+    });
+  }
 })();
 </script>
 <script>

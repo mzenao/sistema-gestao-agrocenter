@@ -681,7 +681,19 @@ def relatorios():
 
 @app.route("/financeiro")
 def financeiro():
-    despesas = Despesa.query.all()
+    # categories available for filtering
+    categorias = ["Todas", "Compra", "Pessoal", "Operacional"]
+    selecionada = request.args.get("categoria", "Todas")
+
+    # always load all despesas to compute totals
+    todas_despesas = Despesa.query.all()
+
+    # filter for display
+    if selecionada != "Todas":
+        despesas = [d for d in todas_despesas if d.categoria == selecionada]
+    else:
+        despesas = todas_despesas
+
     vendas = Venda.query.all()
 
     # Agrupar por ano/mês
@@ -696,7 +708,7 @@ def financeiro():
             saldos_por_ano[ano][mes] = {"receitas": 0, "despesas": 0}
         saldos_por_ano[ano][mes]["receitas"] += v.valor_total
 
-    for d in despesas:
+    for d in todas_despesas:
         ano = d.data_despesa.year
         mes = d.data_despesa.month
         if ano not in saldos_por_ano:
@@ -718,14 +730,11 @@ def financeiro():
         receitas_mensais = [0 for _ in range(12)]
         despesas_mensais = [0 for _ in range(12)]
 
-    for d in despesas:
-        if d.categoria == "Operacional":
-            total_operacional = sum(d.valor for d in despesas if d.categoria == "Operacional")
-        elif d.categoria == "Pessoal":
-            total_pessoal = sum(d.valor for d in despesas if d.categoria == "Pessoal")
-        elif d.categoria == "Compra":
-            total_compra = sum(d.valor for d in despesas if d.categoria == "Compra")
-            
+    # compute totals from all despesas regardless of filter
+    total_operacional = sum(d.valor for d in todas_despesas if d.categoria == "Operacional")
+    total_pessoal = sum(d.valor for d in todas_despesas if d.categoria == "Pessoal")
+    total_compra = sum(d.valor for d in todas_despesas if d.categoria == "Compra")
+
     return render_template(
         "financeiro.html",
         despesas=despesas,
@@ -737,7 +746,9 @@ def financeiro():
         saldos_por_ano=saldos_por_ano,
         total_operacional=total_operacional,
         total_pessoal=total_pessoal,
-        total_compra=total_compra
+        total_compra=total_compra,
+        categorias=categorias,
+        categoria_selecionada=selecionada
     )
 
 
