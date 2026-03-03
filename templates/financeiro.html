@@ -81,6 +81,26 @@
   </div>
 </div>
 
+  <!-- Comparação Tipos de Despesa-->
+<div class="card mb-4"></div>
+  <div class="card-header">Comparação de Tipos de Despesa</div>
+  <div class="card-body">
+    <table class="table table-bordered align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Categoria</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for categoria, total in despesas_por_categoria.items() %}
+        <tr>
+          <td>{{ categoria }}</td>
+          <td>R$ {{ "%.2f"|format(total) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   <!-- Gráfico de barras Receitas vs Despesas -->
 <div class="card mb-4">
   <div class="card-header d-flex justify-content-between align-items-center">
