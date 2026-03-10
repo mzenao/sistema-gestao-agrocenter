@@ -695,6 +695,8 @@ def financeiro():
         despesas = todas_despesas
 
     vendas = Venda.query.all()
+    categorias_grafico = {"Compra", "Operacional"}
+    despesas_grafico = [d for d in todas_despesas if d.categoria in categorias_grafico]
 
     # Agrupar por ano/mês
     saldos_por_ano = {}
@@ -708,7 +710,7 @@ def financeiro():
             saldos_por_ano[ano][mes] = {"receitas": 0, "despesas": 0}
         saldos_por_ano[ano][mes]["receitas"] += v.valor_total
 
-    for d in todas_despesas:
+    for d in despesas_grafico:
         ano = d.data_despesa.year
         mes = d.data_despesa.month
         if ano not in saldos_por_ano:
@@ -803,7 +805,8 @@ def financeiro_excluir():
 @app.route("/financeiro_dados/<int:ano>")
 def financeiro_dados(ano):
     # mesma lógica de agrupamento, mas filtrando pelo ano
-    despesas = Despesa.query.all()
+    categorias_grafico = {"Compra", "Operacional"}
+    despesas = Despesa.query.filter(Despesa.categoria.in_(categorias_grafico)).all()
     vendas = Venda.query.all()
 
     saldos_por_ano = {}
