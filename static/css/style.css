@@ -5,6 +5,11 @@ footer {
 
 body {
   padding-bottom: 80px; /* ajuste à altura do footer */
+    font-weight: 700 !important;
+}
+
+body * {
+    font-weight: 700 !important;
 }
 
 /* ------------------------- Index ----------------------- */
