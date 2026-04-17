@@ -685,14 +685,21 @@ def financeiro():
     categorias = ["Todas", "Compra", "Pessoal", "Operacional"]
     selecionada = request.args.get("categoria", "Todas")
 
+    # year/month for filtering table
+    ano_filtro = int(request.args.get("ano", datetime.now().year))
+    mes_filtro = int(request.args.get("mes", datetime.now().month))
+
     # always load all despesas to compute totals
     todas_despesas = Despesa.query.all()
 
-    # filter for display
-    if selecionada != "Todas":
-        despesas = [d for d in todas_despesas if d.categoria == selecionada]
-    else:
-        despesas = todas_despesas
+    # filter for display by category, year, and month
+    despesas = []
+    for d in todas_despesas:
+        if selecionada != "Todas" and d.categoria != selecionada:
+            continue
+        if d.data_despesa.year != ano_filtro or d.data_despesa.month != mes_filtro:
+            continue
+        despesas.append(d)
 
     vendas = Venda.query.all()
     categorias_grafico = {"Compra", "Operacional"}
@@ -765,6 +772,8 @@ def financeiro():
         total_compra=total_compra,
         categorias=categorias,
         categoria_selecionada=selecionada,
+        ano_filtro=ano_filtro,
+        mes_filtro=mes_filtro,
         ano_totais=ano_totais,
         mes_totais=mes_totais,
         total_operacional_mensal=total_operacional_mensal,

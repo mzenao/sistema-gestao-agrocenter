@@ -44,11 +44,24 @@
   <!-- Tabela de despesas -->
 <div class="card mb-4">
   <div class="card-header d-flex align-items-center justify-content-between">Despesas Registradas
-    <select id="categoriaSelector" class="form-select w-auto">
-      {% for cat in categorias %}
-      <option value="{{ cat }}" {% if cat == categoria_selecionada %}selected{% endif %}>{{ cat }}</option>
-      {% endfor %}
-    </select>
+    <div class="d-flex gap-2">
+      <select id="categoriaSelector" class="form-select w-auto">
+        {% for cat in categorias %}
+        <option value="{{ cat }}" {% if cat == categoria_selecionada %}selected{% endif %}>{{ cat }}</option>
+        {% endfor %}
+      </select>
+      <select id="anoTotaisSelector" class="form-select w-auto">
+        {% for a in anos %}
+        <option value="{{ a }}" {% if a == ano_filtro %}selected{% endif %}>{{ a }}</option>
+        {% endfor %}
+      </select>
+      <select id="mesTotaisSelector" class="form-select w-auto">
+        {% set nomes_meses = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"] %}
+        {% for i in range(1,13) %}
+        <option value="{{ i }}" {% if i == mes_filtro %}selected{% endif %}>{{ nomes_meses[i-1] }}</option>
+        {% endfor %}
+      </select>
+    </div>
   </div>
   <div class="card-body">
     <table class="table table-striped align-middle">
@@ -191,20 +204,37 @@ function csvToArray(str) {
       });
   });
 
-  // Atualiza ao trocar a categoria (recarrega a página com parâmetro GET)
-  const catSel = document.getElementById('categoriaSelector');
-  if (catSel) {
-    catSel.addEventListener('change', function() {
-      const cat = this.value;
-      const params = new URLSearchParams(window.location.search);
-      if (cat && cat !== 'Todas') {
-        params.set('categoria', cat);
-      } else {
-        params.delete('categoria');
-      }
-      window.location.search = params.toString();
-    });
+  // Atualiza ao trocar a categoria, ano ou mês na tabela de despesas
+  function atualizarFiltrosDespesas() {
+    const cat = document.getElementById('categoriaSelector').value;
+    const ano = document.getElementById('anoTotaisSelector').value;
+    const mes = document.getElementById('mesTotaisSelector').value;
+    const params = new URLSearchParams(window.location.search);
+    
+    if (cat && cat !== 'Todas') {
+      params.set('categoria', cat);
+    } else {
+      params.delete('categoria');
+    }
+    
+    if (ano) {
+      params.set('ano', ano);
+    }
+    
+    if (mes) {
+      params.set('mes', mes);
+    }
+    
+    window.location.search = params.toString();
   }
+
+  const catSel = document.getElementById('categoriaSelector');
+  const anoSel = document.getElementById('anoTotaisSelector');
+  const mesSel = document.getElementById('mesTotaisSelector');
+  
+  if (catSel) catSel.addEventListener('change', atualizarFiltrosDespesas);
+  if (anoSel) anoSel.addEventListener('change', atualizarFiltrosDespesas);
+  if (mesSel) mesSel.addEventListener('change', atualizarFiltrosDespesas);
 
   // Atualiza totais por categoria ao trocar ano/mes
   function atualizarTotais() {
