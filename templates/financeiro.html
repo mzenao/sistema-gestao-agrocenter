@@ -105,12 +105,12 @@
     <div class="card-header d-flex justify-content-between align-items-center">
       <span>Total por Despesas</span>
       <div class="d-flex">
-        <select id="anoTotaisSelector" class="form-select w-auto me-2">
+        <select id="anoTotaisResumoSelector" class="form-select w-auto me-2">
           {% for a in anos %}
           <option value="{{ a }}" {% if a == ano_totais %}selected{% endif %}>{{ a }}</option>
           {% endfor %}
         </select>
-        <select id="mesTotaisSelector" class="form-select w-auto">
+        <select id="mesTotaisResumoSelector" class="form-select w-auto">
           {% set nomes_meses = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"] %}
           {% for i in range(1,13) %}
           <option value="{{ i }}" {% if i == mes_totais %}selected{% endif %}>{{ nomes_meses[i-1] }}</option>
@@ -238,8 +238,8 @@ function csvToArray(str) {
 
   // Atualiza totais por categoria ao trocar ano/mes
   function atualizarTotais() {
-    const anoT = document.getElementById('anoTotaisSelector').value;
-    const mesT = document.getElementById('mesTotaisSelector').value;
+    const anoT = document.getElementById('anoTotaisResumoSelector').value;
+    const mesT = document.getElementById('mesTotaisResumoSelector').value;
     // update query string so preferences persist on refresh
     const params = new URLSearchParams(window.location.search);
     params.set('ano', anoT);
@@ -254,8 +254,8 @@ function csvToArray(str) {
       });
   }
 
-  const anoTot = document.getElementById('anoTotaisSelector');
-  const mesTot = document.getElementById('mesTotaisSelector');
+  const anoTot = document.getElementById('anoTotaisResumoSelector');
+  const mesTot = document.getElementById('mesTotaisResumoSelector');
   if (anoTot) anoTot.addEventListener('change', atualizarTotais);
   if (mesTot) mesTot.addEventListener('change', atualizarTotais);
 })();
