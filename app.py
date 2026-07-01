@@ -12,12 +12,18 @@ import os
 # CONFIGURAÇÕES
 # ---------------------
 app = Flask(__name__)
+os.makedirs(app.instance_path, exist_ok=True)
 
 # Usa a SECRET_KEY vinda das variáveis de ambiente do Railway
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "chave_secreta_super_secreta")
 
-# Configuração do banco: pega a URL do Railway
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
+# Configuração do banco: usa PostgreSQL em produção e SQLite localmente
+database_url = os.getenv("DATABASE_URL")
+if database_url and database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+if not database_url:
+    database_url = f"sqlite:///{os.path.join(app.instance_path, 'agrocenter.db')}"
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 
 # Desativa rastreamento extra
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -702,7 +708,7 @@ def financeiro():
         despesas.append(d)
 
     vendas = Venda.query.all()
-    categorias_grafico = {"Compra", "Operacional"}
+    categorias_grafico = {"Compra", "Operacional", "Pessoal"}
     despesas_grafico = [d for d in todas_despesas if d.categoria in categorias_grafico]
 
     # Agrupar por ano/mês
@@ -814,7 +820,7 @@ def financeiro_excluir():
 @app.route("/financeiro_dados/<int:ano>")
 def financeiro_dados(ano):
     # mesma lógica de agrupamento, mas filtrando pelo ano
-    categorias_grafico = {"Compra", "Operacional"}
+    categorias_grafico = {"Compra", "Operacional", "Pessoal"}
     despesas = Despesa.query.filter(Despesa.categoria.in_(categorias_grafico)).all()
     vendas = Venda.query.all()
 
